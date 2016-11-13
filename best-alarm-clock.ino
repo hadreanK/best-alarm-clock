@@ -32,7 +32,7 @@ void setup(){
   
 void loop() {
     setClockPins(&cInfo); // Set the pins going to the Clock to match the current time 
-    setMenu(&myMenu, &cInfo);
+    setMenu(); //&myMenu, &cInfo);
     lcd.setCursor(0,0);
     lcd.print(myMenu.topLine);
     lcd.setCursor(0,1);

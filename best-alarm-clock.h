@@ -4,7 +4,12 @@ This is just a test
 #ifndef best-alarm-clock_h
 #define best-alarm-clock_h
 
-
+	#include "LED_Clock_helper.h"
+	#include "Arduino.h"
+	#include <LiquidCrystal.h>
+	#include <OneWire.h>    // required for thermistor
+	#include <DallasTemperature.h>    // required for thermistor
+	
 
 
 typedef struct{
