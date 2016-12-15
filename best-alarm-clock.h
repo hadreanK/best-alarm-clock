@@ -1,15 +1,8 @@
 /*
 This is just a test
 */
-#ifndef best-alarm-clock_h
-#define best-alarm-clock_h
-
-	#include "LED_Clock_helper.h"
-	#include "Arduino.h"
-	#include <LiquidCrystal.h>
-	#include <OneWire.h>    // required for thermistor
-	#include <DallasTemperature.h>    // required for thermistor
-	
+#ifndef best_alarm_clock_h
+#define best_alarm_clock_h
 
 
 typedef struct{
@@ -23,7 +16,7 @@ void preSetupEverything (int LCD, int LCDStartPin, int Thermometer, int thermoPi
 
 void setupEverything (int LCD, int Thermometer, int thermoPin);
 
-void setMenu(void); //menuInfo *mp); //, clockInfo *cp);
+void setMenu(menuInfo *mp, clockInfo *cp);
 // This function will 
 // Note: x and y must both be positive 
 // Increasing x goes to the right (->) in the menu
