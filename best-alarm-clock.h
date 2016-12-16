@@ -4,6 +4,7 @@ This is just a test
 #ifndef best_alarm_clock_h
 #define best_alarm_clock_h
 
+#include "LED_Clock_helper.h" // I'm not sure why this wasn't working when it was in just the .c file, but hey. I just want this damn thing to work right now.
 
 typedef struct{
 	int x; // contains current x location in the menu
