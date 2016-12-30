@@ -26,9 +26,9 @@ void setMenu(menuInfo *mp, clockInfo *cp, thermoInfo *tp);
 // Increasing x goes to the right (->) in the menu
 // Increasing y goes down in the menu
 
-void turnOnOffFurnace(thermoInfo *tp);
+void turnOnOffHeater(thermoInfo *tp);
 // This function will change the heaterOn value in the thermoInfo struct
-// to reflect whether or not it shoudl be on given the room temperature and 
+// to reflect whether or not it should be on given the room temperature and 
 // desired temperature
 
 #endif

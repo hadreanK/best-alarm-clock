@@ -56,7 +56,7 @@ void setMenu(menuInfo *mp, clockInfo *cp, thermoInfo *tp){
 		}// switch coord
 	} // menuOptions
 
-void turnOnOffFurnace(thermoInfo *tp){
+void turnOnOffHeater(thermoInfo *tp){
 	switch (tp->heaterOn){
 	case 0:// If the heater is off
 		if(tp->roomTemp < (tp->desiredTemp - LO_TEMP_BUFFER)){// And it's too cold
