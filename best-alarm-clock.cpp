@@ -5,7 +5,13 @@
 	#include "best-alarm-clock.h"
 	#include "Arduino.h"
 	#include "LED_Clock_helper.h"
-	
+
+// DEFINES
+#define LO_TEMP_BUFFER 1.0     // The thermostat will turn on if the room temperature
+                                // is this many degrees below the desired temperature
+#define HI_TEMP_BUFFER 1.0     	// The thermostat will turn off if the room temperature
+                               	// is this many degrees above the desired temperature
+
 	
 
 	
@@ -44,10 +50,27 @@ void setMenu(menuInfo *mp, clockInfo *cp, thermoInfo *tp){
 		 	sprintf(mp->topLine, "Set Clock");
 		 	sprintf(mp->botLine, "Time is %i%i:%i%i",(cp->d1)%10,cp->d2,cp->d3,cp->d4);
 		case 103:
-		 	sprintf(mp->topLine, "Temp is: %i", tp->realT);
-		 	sprintf(mp->botLine, "Desired: %i", tp->wantT);
+		 	sprintf(mp->topLine, "Temp is: %i", tp->roomTemp);
+		 	sprintf(mp->botLine, "Desired: %i", tp->desiredTemp);
 		break;
 		}// switch coord
 	} // menuOptions
+
+void turnOnOffFurnace(thermoInfo *tp){
+	switch (tp->heaterOn){
+	case 0:// If the heater is off
+		if(tp->roomTemp < (tp->desiredTemp - LO_TEMP_BUFFER)){// And it's too cold
+			tp->heaterOn = 1;// turn the heater on
+		} else {
+			tp->heaterOn = 0;}// Otherwise leave it off
+		break;
+	case 1:// If the heater is on
+		if(tp->roomTemp > (tp->desiredTemp + HI_TEMP_BUFFER)){// And it's too warm
+			tp->heaterOn = 0;// turn the heater off
+		} else {
+			tp->heaterOn =1;}// Otherwise leave it on
+		break;
+	} // switch heaterOn
+	}// turnOnOffFurnace
 
 #endif

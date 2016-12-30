@@ -1,4 +1,5 @@
 // https://www.arduino.cc/en/Reference/PortManipulation
+
 // INCLUDES
     #include "best-alarm-clock.h"   // Helper Functions
     #include <LiquidCrystal.h>      // for LCD
@@ -27,7 +28,7 @@ void setup(){
         cInfo.t = 2*3600 + 56*60;    // Initialize the time to be 5:35 (or whatever)
     // THERMOSTAT
         pinMode(THERMO_PIN,OUTPUT);
-        myThermo.wantT = 69;
+        myThermo.desiredTemp = 69;
 
     // MENU
         myMenu.x = 1;    myMenu.y = 3;
@@ -38,7 +39,9 @@ void loop() {
     setClockPins(&cInfo); // Set the pins going to the Clock to match the current time 
     // Thermostat
         sensors.requestTemperatures(); // Send the command to get temperatures
-        myThermo.realT = (int) sensors.getTempCByIndex(0)*9/5+32; 
+        myThermo.roomTemp = sensors.getTempCByIndex(0)*9/5+32; 
+        myThermo.desiredTemp = 70.0;
+        turnOnOffFurnace(&myThermo);
     // Set the menu things
         setMenu(&myMenu, &cInfo, &myThermo);
         lcd.setCursor(0,0);
@@ -51,10 +54,12 @@ void loop() {
     
     } //loop  
 
+// Timer ISR for counting time
 ISR(TIMER4_COMPA_vect) { // The lower the Interrupt Vector address, the higher the priority. Table 14.1, p101
     cInfo.t = cInfo.t + 1; // increment time by 1 second
 } // ISR TIMER4
 
+// Timer ISR for switching LED cathodes
 ISR(TIMER3_COMPA_vect) {
     // In this ISR, we switch the cathode, and set the anode pins accordingly
     PORTC = PORTC ^ 0x03; // Toggle the cathode between 0 and 1, so toggle both pins C0 and C1

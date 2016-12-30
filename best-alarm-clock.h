@@ -11,9 +11,9 @@ typedef struct{
 	} menuInfo;
 
 typedef struct{
-	int realT; 		// the most recent temperature in the room in degrees F
-	int wantT;		// The desired temperature in the room in degrees F
-	int furnaceOn; 	// 1 if the furnace should be on, 0 if it should be off
+	float roomTemp; 		// the most recent temperature in the room in degrees F
+	float desiredTemp;		// The desired temperature in the room in degrees F
+	int heaterOn; 	// 1 if the heater should be on, 0 if it should be off
 } thermoInfo;
 
 void preSetupEverything (int LCD, int LCDStartPin, int Thermometer, int thermoPin);
@@ -25,5 +25,10 @@ void setMenu(menuInfo *mp, clockInfo *cp, thermoInfo *tp);
 // Note: x and y must both be positive 
 // Increasing x goes to the right (->) in the menu
 // Increasing y goes down in the menu
+
+void turnOnOffFurnace(thermoInfo *tp);
+// This function will change the heaterOn value in the thermoInfo struct
+// to reflect whether or not it shoudl be on given the room temperature and 
+// desired temperature
 
 #endif
