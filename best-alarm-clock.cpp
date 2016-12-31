@@ -56,7 +56,7 @@ void setMenu(menuInfo *mp, clockInfo *cp, thermoInfo *tp){
 		}// switch coord
 	} // menuOptions
 
-void turnOnOffHeater(thermoInfo *tp){
+void heaterControl(thermoInfo *tp){
 	switch (tp->heaterOn){
 	case 0:// If the heater is off
 		if(tp->roomTemp < (tp->desiredTemp - LO_TEMP_BUFFER)){// And it's too cold
@@ -71,6 +71,16 @@ void turnOnOffHeater(thermoInfo *tp){
 			tp->heaterOn =1;}// Otherwise leave it on
 		break;
 	} // switch heaterOn
-	}// turnOnOffFurnace
+	}// heaterControl
+
+void heaterLightScheduling(thermoInfo *tp, clockInfo *cp, alarmInfo *ap){
+	if(!heaterOverride){ // If the heater override isn't on
+		if( (ap->time - ap-> heaterOnBefore)< cp->t < (ap->time - ap-> heaterOnAfter)// See if it's time for the heater to be on
+		// Set heater on
+		} // if
+	
+
+	} // heaterLightScheduling
+
 
 #endif
