@@ -30,7 +30,7 @@ void preSetupEverything (int LCD, int LCDStartPin, int Thermometer, int thermoPi
 
 void setupEverything (int LCD, int Thermometer, int thermoPin);
 
-void setMenu(menuInfo *mp, clockInfo *cp, thermoInfo *tp);
+void setMenu(alarmInfo *ap, clockInfo *cp, LiquidCrystal *lp, menuInfo *mp, thermoInfo *tp);
 // This function will 
 // Note: x and y must both be positive 
 // Increasing x goes to the right (->) in the menu
@@ -40,5 +40,13 @@ void heaterControl(thermoInfo *tp);
 // This function will change the heaterOn value in the thermoInfo struct
 // to reflect whether or not it should be on given the room temperature and 
 // desired temperature
+
+int heaterLightScheduling( alarmInfo *ap, clockInfo *cp, thermoInfo *tp);
+// This will return 1 if the lights should be turned on, 0 if the light should be off
+// This should be called after the heaterControl function, but before writing to the
+// pin connected to the heater's relay
+unsigned int timeToSec(int hours, int minutes);
+// This function takes time in mintues and hours and returns it in second format
+// If the time is greater than 24 hours, it resets it to a 24 hour clock number
 
 #endif

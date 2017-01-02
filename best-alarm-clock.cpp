@@ -2,9 +2,11 @@
 #define best_alarm_clock_c
 
 // INCLUDES
-	#include "best-alarm-clock.h"
-	#include "Arduino.h"
+	
+	#include <Arduino.h>
+	#include <LiquidCrystal.h>
 	#include "LED_Clock_helper.h"
+	#include "best-alarm-clock.h"
 
 // DEFINES
 #define LO_TEMP_BUFFER 1.0     // The thermostat will turn on if the room temperature
@@ -39,7 +41,7 @@ void setupEverything(int LCD, int Thermometer, int thermoPin){
 		}
 	}		
 
-void setMenu(menuInfo *mp, clockInfo *cp, thermoInfo *tp){
+void setMenu(alarmInfo *ap, clockInfo *cp, LiquidCrystal *lp, menuInfo *mp, thermoInfo *tp){
 	int coord = 100*mp->x + mp->y; // the coord will be 101 for 1,1; 203 for 2,3 etc.
 
 	switch (coord){
@@ -54,6 +56,12 @@ void setMenu(menuInfo *mp, clockInfo *cp, thermoInfo *tp){
 		 	sprintf(mp->botLine, "Desired: %i", tp->desiredTemp);
 		break;
 		}// switch coord
+
+	// Print the menu out to the screen
+	lp->setCursor(0,0);
+    lp->print(mp->topLine);
+    lp->setCursor(0,1);
+    lp->print(mp->botLine);
 	} // menuOptions
 
 void heaterControl(thermoInfo *tp){
@@ -73,14 +81,21 @@ void heaterControl(thermoInfo *tp){
 	} // switch heaterOn
 	}// heaterControl
 
-void heaterLightScheduling(thermoInfo *tp, clockInfo *cp, alarmInfo *ap){
-	if(!heaterOverride){ // If the heater override isn't on
-		if( (ap->time - ap-> heaterOnBefore)< cp->t < (ap->time - ap-> heaterOnAfter)// See if it's time for the heater to be on
-		// Set heater on
-		} // if
-	
-
+int heaterLightScheduling(alarmInfo *ap, clockInfo *cp, thermoInfo *tp){
+	if(!tp->heaterOverride){ // If the heater override isn't on
+		if( ((ap->time - ap-> heaterOnBefore) > cp->t) | (cp->t > (ap->time + ap-> heaterOnAfter))) {// And it's not time for the heater ot be on 
+			tp->heaterOn = 0;// Keep the heater off, 
+		} // if 
+	} // if not heaterOverRide
+	if(((ap->time - ap->lightOnBefore)< cp->t) & (cp->t < (ap->time + ap->lightOnAfter))){// If the lights should be on
+		return(1);// Turn them on, i.e. return 1
+		} else { return(0);} // otherwise turn them off, i.e. return 0
 	} // heaterLightScheduling
 
+unsigned int timeToSec(int hours, int minutes){
+	unsigned int time = 60*60*hours + 60*minutes; // convert the timeit to seconds
+	time = time%(24*60*60); // mod it to make sure it's just in one day
+	return(time);
+}
 
 #endif

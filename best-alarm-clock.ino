@@ -1,14 +1,16 @@
 // https://www.arduino.cc/en/Reference/PortManipulation
 
 // INCLUDES
-    #include "best-alarm-clock.h"   // Helper Functions
+    
     #include <LiquidCrystal.h>      // for LCD
     #include <OneWire.h>            // required for thermistor
     #include <DallasTemperature.h>  // required for thermistor
+    #include "best-alarm-clock.h"   // Helper Functions
 
 // DEFINES
     #define THERMOMETER_PIN 2       // the pin with the thermometer attached
     #define HEATER_PIN 3            // the pin connected to the relay controlling the heater
+    #define LIGHT_PIN 4             // the pin connected to the relay controlling the lights
 // Global Variables
     clockInfo   Clock;          // This is the info thing for the clock
     menuInfo    Menu;           // This contains the info for the menu position and text
@@ -38,8 +40,9 @@ void setup(){
         pinMode(HEATER_PIN,OUTPUT);
         digitalWrite(HEATER_PIN,0);
 
-    // MENU
+    // MENU & BUTTONS
         Menu.x = 1;    Menu.y = 3;
+        // Clear button flags
 
     // ALARM
         Alarm.time = 7*3600 + 15*60; // set the time for alarm
@@ -48,6 +51,7 @@ void setup(){
         Alarm.heaterOnAfter = 20*60; // Set how long heater should stay on
         Alarm.lightOnBefore = 5*60; // How early lights come on
         Alarm.lightOnAfter = 30*60; // How long lights stay on
+
     } //setup
   
 void loop() {
@@ -59,17 +63,13 @@ void loop() {
         Thermo.roomTemp = sensors.getTempCByIndex(0)*9/5+32; 
         Thermo.desiredTemp = 70.0;
         heaterControl(&Thermo); // figure out if the heater should be off or on
-        digitalWrite(HEATER_PIN,Thermo.heaterOn); // turn on or off the heater
-    // MENU
-        setMenu(&Menu, &Clock, &Thermo);
-        Lcd.setCursor(0,0);
-        Lcd.print(Menu.topLine);
-        Lcd.setCursor(0,1);
-        Lcd.print(Menu.botLine);
+        
+    // MENU & BUTTONS
+        setMenu(&Alarm, &Clock, &Lcd, &Menu, &Thermo); // set the menu options
+        // If either button was pressed, figure out what the hell to do with it
     // ALARM
-    
-
-    delay(1000);
+    digitalWrite(LIGHT_PIN, heaterLightScheduling(&Alarm, &Clock, &Thermo)); // turn on/off the lights / heater
+    digitalWrite(HEATER_PIN,Thermo.heaterOn); // turn on or off the heater
     
     } //loop  
 
