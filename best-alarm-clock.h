@@ -15,6 +15,7 @@ typedef struct{
 	float desiredTemp;		// The desired temperature in the room in degrees F
 	int heaterOn; 			// 1 if the heater should be on, 0 if it should be off
 	int heaterOverride; 	// 1 if the user wants the heater to be on outside of normal scheduling
+	unsigned int lastTempTimestamp; // this is the last time the temperature was read
 	} thermoInfo;
 
 typedef struct{
@@ -25,6 +26,11 @@ typedef struct{
 	int lightOnBefore; 	// how may seconds before the alarm goes off the light will come on
 	int lightOnAfter; 	// how many seconds after the alarm goes off the light will be on
 	} alarmInfo;
+typedef struct{
+	int b1; 			// Flag for button 1
+	int b2; 			// Flag for button 2
+	int b3; 			// Flag for button 3
+	} flagInfo;
 
 void preSetupEverything (int LCD, int LCDStartPin, int Thermometer, int thermoPin);
 
@@ -35,6 +41,9 @@ void setMenu(alarmInfo *ap, clockInfo *cp, LiquidCrystal *lp, menuInfo *mp, ther
 // Note: x and y must both be positive 
 // Increasing x goes to the right (->) in the menu
 // Increasing y goes down in the menu
+
+void processButtons(flagInfo *fp, alarmInfo *ap, clockInfo *cp, menuInfo *mp, thermoInfo *tp);
+// This function will process 
 
 void heaterControl(thermoInfo *tp);
 // This function will change the heaterOn value in the thermoInfo struct

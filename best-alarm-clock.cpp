@@ -13,6 +13,7 @@
                                 // is this many degrees below the desired temperature
 #define HI_TEMP_BUFFER 1.0     	// The thermostat will turn off if the room temperature
                                	// is this many degrees above the desired temperature
+#define NUM_MENUS	6			// The number of menus to scroll through
 
 	
 
@@ -42,19 +43,37 @@ void setupEverything(int LCD, int Thermometer, int thermoPin){
 	}		
 
 void setMenu(alarmInfo *ap, clockInfo *cp, LiquidCrystal *lp, menuInfo *mp, thermoInfo *tp){
-	int coord = 100*mp->x + mp->y; // the coord will be 101 for 1,1; 203 for 2,3 etc.
-
-	switch (coord){
-		case 101:
-		 	sprintf(mp->topLine, "Main Menu");
-		 	sprintf(mp->botLine, "Time is");
-		case 102:
-		 	sprintf(mp->topLine, "Set Clock");
+	//int coord = 100*mp->x + mp->y; // the coord will be 101 for 1,1; 203 for 2,3 etc.
+	int alarmD1 = round(ap->time/36000);;
+	int alarmD2 = round((ap->time - alarmD1*36000)/3600);
+	int alarmD3 = round((ap->time - alarmD1*36000 - alarmD2*3600)/60);
+	int alarmD4 = ap->time%60;
+	switch (mp->y){
+		case 1:
+		 	sprintf(mp->topLine, "Clock Hr     %iF", round(tp->roomTemp));
 		 	sprintf(mp->botLine, "Time is %i%i:%i%i",(cp->d1)%10,cp->d2,cp->d3,cp->d4);
-		case 103:
-		 	sprintf(mp->topLine, "Temp is: %i", tp->roomTemp);
-		 	sprintf(mp->botLine, "Desired: %i", tp->desiredTemp);
-		break;
+		 	break;
+		case 2:
+		 	sprintf(mp->topLine, "Clock Min    %iF", round(tp->roomTemp));
+		 	sprintf(mp->botLine, "Time is %i%i:%i%i",(cp->d1)%10,cp->d2,cp->d3,cp->d4);
+		 	break;
+		case 3:
+		 	sprintf(mp->topLine, "Alarm Set     %iF", round(tp->roomTemp));
+		 	if(ap->set>0){sprintf(mp->botLine, "Alarm is ON       ");
+		 	}else{sprintf(mp->botLine, "Alarm is OFF      ");}
+		 	break;
+		case 4:
+		 	sprintf(mp->topLine, "Alarm Hr     %iF", round(tp->roomTemp));
+		 	sprintf(mp->botLine, "Alarm at   %i%i:%i%i",alarmD1, alarmD2, alarmD3, alarmD4);
+		 	break;
+		case 5:
+		 	sprintf(mp->topLine, "Alarm Min    %iF", round(tp->roomTemp));
+		 	sprintf(mp->botLine, "Alarm at   %i%i:%i%i",alarmD1, alarmD2, alarmD3, alarmD4);
+		 	break;
+		case 6:
+		 	sprintf(mp->topLine, "Thermostat   %iF", round(tp->roomTemp));
+		 	sprintf(mp->botLine, "Desired: %i     ", round(tp->desiredTemp));
+			break;
 		}// switch coord
 
 	// Print the menu out to the screen
@@ -63,6 +82,44 @@ void setMenu(alarmInfo *ap, clockInfo *cp, LiquidCrystal *lp, menuInfo *mp, ther
     lp->setCursor(0,1);
     lp->print(mp->botLine);
 	} // menuOptions
+
+void processButtons(flagInfo *fp, alarmInfo *ap, clockInfo *cp, menuInfo *mp, thermoInfo *tp){
+	if(fp->b3>0){	// button3 changes the menu
+		mp->y = mp->y%NUM_MENUS + 1;
+		}//if b3
+	
+	switch (mp->y){
+		case 1:
+			cp->t = cp->t + 3600*fp->b1;
+			cp->t = cp->t - 3600*fp->b2;
+			break;
+		case 2:
+			cp->t = cp->t + 60*fp->b1;
+			cp->t = cp->t - 60*fp->b2;
+			break;
+		case 3:
+			if(fp->b1>0){ap->set = 1;}
+			if(fp->b2>0){ap->set = 0;}
+			break;
+		case 4:
+			ap->time = ap->time + 3600*fp->b1;
+			ap->time = ap->time - 3600*fp->b2;
+			break;
+		case 5:
+			ap->time = ap->time + 60*fp->b1;
+			ap->time = ap->time - 60*fp->b2;
+			break;
+		case 6:
+			if(fp->b1>0){tp->desiredTemp = tp->desiredTemp + 1.0;}
+			if(fp->b2>0){tp->desiredTemp = tp->desiredTemp - 1.0;}
+			break;
+		}// switch coord
+
+		// Clear all button flags
+		fp->b1 = 0;
+		fp->b2 = 0;
+		fp->b3 = 0;
+	} // processButtons
 
 void heaterControl(thermoInfo *tp){
 	switch (tp->heaterOn){
@@ -97,5 +154,7 @@ unsigned int timeToSec(int hours, int minutes){
 	time = time%(24*60*60); // mod it to make sure it's just in one day
 	return(time);
 }
+
+
 
 #endif

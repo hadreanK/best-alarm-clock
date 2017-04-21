@@ -13,7 +13,7 @@ LED display I jacked from that sony clock
 	
 // Functions
 void initializeClockTimers( int T3, int T4){
-	// Use Timer 3 to control the clock switching since it has a higher ISR priority to Timer 4
+	// Use Timer 3 to control the cathode switching since it has a higher ISR priority to Timer 4
 	if (T3 > 0){
 		TCCR3A = 0x00; // Want bits 1:0 to be 00, they're WGM3 1:0, and everything else too
 		TCCR3B = 0x0C; // Bits 7:6 have to do with input capture, 5 is reserved, 4:3 are waveform generation
